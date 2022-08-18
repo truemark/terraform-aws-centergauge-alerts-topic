@@ -5,8 +5,50 @@ resource "aws_sns_topic" "topic" {
   kms_master_key_id = var.kms_master_key_id
 }
 
+resource "aws_sqs_queue" "dlq" {
+  name = "${var.name}DeadLeterQueue"
+}
+
 resource "aws_sns_topic_subscription" "subscription" {
   endpoint  = var.url
   protocol  = "https"
   topic_arn = aws_sns_topic.topic.arn
+  delivery_policy = jsonencode({
+    "healthyRetryPolicy": {
+      "numRetries": 10,
+      "numNoDelayRetries": 0,
+      "minDelayTarget": 30,
+      "maxDelayTarget": 120,
+      "numMinDelayRetries": 3,
+      "numMaxDelayRetries": 0,
+      "backoffFunction": "linear"
+    }
+  })
+  redrive_policy = jsonencode({
+    "deadLetterTargetArn": aws_sqs_queue.dlq.arn
+  })
+}
+
+resource "aws_sqs_queue_policy" "dlq" {
+  queue_url = aws_sqs_queue.dlq.id
+  policy    = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Id": "sqspolicy",
+  "Statement": [
+    {
+      "Sid": "First",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "sqs:SendMessage",
+      "Resource": "${aws_sqs_queue.dlq.arn}",
+      "Condition": {
+        "ArnEquals": {
+          "aws:SourceArn": "${aws_sns_topic.topic.arn}"
+        }
+      }
+    }
+  ]
+}
+POLICY
 }
