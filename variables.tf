@@ -16,11 +16,11 @@ variable "url" {
   type = string
 }
 
-variable "kms_master_key_id" {
-  description = "KMS Key to use for enryption"
-  default = "alias/aws/sns"
-  type = string
-}
+# variable "kms_master_key_id" {
+#   description = "KMS Key to use for encryption. Cannot be CMK."
+#   default = "alias/aws/sns"
+#   type = string
+# }
 
 
 
