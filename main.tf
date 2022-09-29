@@ -56,7 +56,6 @@ POLICY
 # Create the alias. Without the alias, there is no friendly name in the console
 resource "aws_kms_alias" "sns" {
   name          = "alias/${var.name}"
-  # target_key_id = aws_kms_key.sns.key_id
   target_key_id = try(data.aws_kms_key.parameter[0].key_id, aws_kms_key.sns[0].key_id)
 }
 
