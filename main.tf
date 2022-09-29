@@ -5,7 +5,10 @@ resource "aws_sns_topic" "topic" {
   name              = var.name
   fifo_topic        = false
   kms_master_key_id = aws_kms_key.sns.id
+<<<<<<< HEAD
   tags              = var.tags
+=======
+>>>>>>> main
 }
 
 # Cloudwatch cannot write to an SNS topic that is encrypted with the SNS CMK.
@@ -15,6 +18,7 @@ resource "aws_sns_topic" "topic" {
 
 resource "aws_kms_key" "sns" {
   description = "Encrypt SNS topic CenterGaugeAlerts. Managed by Terraform."
+<<<<<<< HEAD
   tags        = var.tags
   policy      = <<POLICY
   {
@@ -51,6 +55,43 @@ POLICY
 resource "aws_kms_alias" "sns" {
   name          = "alias/${var.name}"
   target_key_id = aws_kms_key.sns.key_id
+=======
+}
+
+resource "aws_iam_role" "kms_sns_key" {
+  name               = "${var.name}Decrypt"
+  assume_role_policy = data.aws_iam_policy_document.assume_kms_sns_key.json
+}
+
+# This policy defines which AWS services can assume the role defined above. 
+data "aws_iam_policy_document" "assume_kms_sns_key" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["cloudwatch.amazonaws.com", "rds.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "kms_sns_key" {
+  name        = "${var.name}Decrypt"
+  description = "Encrypt SNS topic CenterGaugeAlerts. Managed by Terraform."
+  policy      = data.aws_iam_policy_document.kms_sns_key.json
+}
+
+data "aws_iam_policy_document" "kms_sns_key" {
+  statement {
+    actions   = ["kms:Decrypt", "kms:GenerateDataKey"]
+    resources = [aws_kms_key.sns.arn]
+  }
+}
+
+resource "aws_iam_policy_attachment" "kms_sns_key" {
+  name       = "${var.name}Decrypt"
+  roles      = [aws_iam_role.kms_sns_key.name]
+  policy_arn = aws_iam_policy.kms_sns_key.arn
+>>>>>>> main
 }
 
 resource "aws_sqs_queue" "dlq" {

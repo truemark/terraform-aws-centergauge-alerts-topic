@@ -22,8 +22,20 @@ variable "url" {
   type        = string
 }
 
+<<<<<<< HEAD
 variable "kms_key" {
   description = "Optional name of KMS key to use for encryption."
   type        = string
   default     = null
 }
+=======
+# variable "kms_master_key_id" {
+#   description = "KMS Key to use for encryption. Cannot be CMK."
+#   default = "alias/aws/sns"
+#   type = string
+# }
+
+
+
+
+>>>>>>> main
