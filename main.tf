@@ -1,10 +1,15 @@
 data "aws_caller_identity" "current" {}
 
+data "aws_kms_key" "parameter" {
+  count  = var.kms_key_arn == null ? 0 : 1
+  key_id = var.kms_key_arn
+}
+
 resource "aws_sns_topic" "topic" {
   display_name      = var.display_name
   name              = var.name
   fifo_topic        = false
-  kms_master_key_id = aws_kms_key.sns.id
+  kms_master_key_id = try(var.kms_key_arn, aws_kms_key.sns[0].key_id)
   tags              = var.tags
 }
 
@@ -14,6 +19,7 @@ resource "aws_sns_topic" "topic" {
 # publish permissions.
 
 resource "aws_kms_key" "sns" {
+  count       = var.create_kms_key ? 1 : 0
   description = "Encrypt SNS topic CenterGaugeAlerts. Managed by Terraform."
   tags        = var.tags
   policy      = <<POLICY
@@ -50,7 +56,8 @@ POLICY
 # Create the alias. Without the alias, there is no friendly name in the console
 resource "aws_kms_alias" "sns" {
   name          = "alias/${var.name}"
-  target_key_id = aws_kms_key.sns.key_id
+  # target_key_id = aws_kms_key.sns.key_id
+  target_key_id = try(data.aws_kms_key.parameter[0].key_id, aws_kms_key.sns[0].key_id)
 }
 
 resource "aws_sqs_queue" "dlq" {
