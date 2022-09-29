@@ -21,3 +21,9 @@ variable "url" {
   default     = "https://alerts.centergauge.com/"
   type        = string
 }
+
+variable "kms_key" {
+  description = "Optional name of KMS key to use for encryption."
+  type        = string
+  default     = null
+}
