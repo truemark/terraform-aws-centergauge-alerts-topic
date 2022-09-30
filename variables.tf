@@ -27,9 +27,3 @@ variable "kms_key_arn" {
   type        = string
   default     = null
 }
-
-variable "create_kms_key" {
-  description = "Whether or not to create a new KMS key."
-  type        = bool
-  default     = false
-}

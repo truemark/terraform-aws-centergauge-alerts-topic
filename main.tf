@@ -19,7 +19,7 @@ resource "aws_sns_topic" "topic" {
 # publish permissions.
 
 resource "aws_kms_key" "sns" {
-  count       = var.create_kms_key ? 1 : 0
+  count       = var.kms_key_arn == null ? 1 : 0
   description = "Encrypt SNS topic CenterGaugeAlerts. Managed by Terraform."
   tags        = var.tags
   policy      = <<POLICY
