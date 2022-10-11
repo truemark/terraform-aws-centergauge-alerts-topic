@@ -1,14 +1,10 @@
 data "aws_caller_identity" "current" {}
 
-data "aws_kms_alias" "key" {
-  name = var.kms_key_alias
-}
-
 resource "aws_sns_topic" "topic" {
   display_name      = var.display_name
   name              = var.name
   fifo_topic        = false
-  kms_master_key_id = data.aws_kms_alias.key.target_key_arn
+  kms_master_key_id = var.kms_key_arn
   tags              = var.tags
 }
 

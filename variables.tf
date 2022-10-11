@@ -21,7 +21,7 @@ variable "url" {
   type        = string
 }
 
-variable "kms_key_alias" {
-  description = "The alias of the key to use"
+variable "kms_key_arn" {
+  description = "The arn of the KMS key"
   type = string
 }
