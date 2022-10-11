@@ -1,4 +1,3 @@
-
 variable "display_name" {
   description = "Overrides default display name"
   default     = "CenterGaugeAlerts"
@@ -22,8 +21,7 @@ variable "url" {
   type        = string
 }
 
-variable "kms_key_arn" {
-  description = "Optional alias of KMS key to use for encryption."
-  type        = string
-  default     = null
+variable "kms_key_alias" {
+  description = "The alias of the key to use"
+  type = string
 }
