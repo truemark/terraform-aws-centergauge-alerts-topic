@@ -44,7 +44,7 @@ resource "aws_sqs_queue_policy" "dlq" {
       "Sid": "First",
       "Effect": "Allow",
       "Principal": "*",
-      "Action": "sqs:SendMessage",
+      "Action": ["sqs:SendMessage", "sns:Publish", "sns:GetTopicAttributes"],
       "Resource": "${aws_sqs_queue.dlq.arn}",
       "Condition": {
         "ArnEquals": {
