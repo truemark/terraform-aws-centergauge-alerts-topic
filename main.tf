@@ -9,14 +9,12 @@ resource "aws_sns_topic" "topic" {
 }
 
 resource "aws_sns_topic_policy" "default" {
-  arn = aws_sns_topic.topic.arn
-
+  arn    = aws_sns_topic.topic.arn
   policy = data.aws_iam_policy_document.sns_topic_policy.json
 }
 
 data "aws_iam_policy_document" "sns_topic_policy" {
   policy_id = "centergauge_sns_policy"
-
   statement {
     actions = [
       "SNS:Subscribe",
@@ -29,7 +27,6 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       "SNS:DeleteTopic",
       "SNS:AddPermission",
     ]
-
     condition {
       test     = "StringEquals"
       variable = "AWS:SourceOwner"
@@ -38,18 +35,14 @@ data "aws_iam_policy_document" "sns_topic_policy" {
         data.aws_caller_identity.current.account_id,
       ]
     }
-
     effect = "Allow"
-
     principals {
       type        = "AWS"
       identifiers = ["*"]
     }
-
     resources = [
       aws_sns_topic.topic.arn,
     ]
-
     sid = "centergauge_aws_default"
   }
 
@@ -58,18 +51,15 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       "SNS:Publish",
       "SNS:GetTopicAttributes"
     ]
-
     principals {
-      type        = "Service"
+      type = "Service"
       identifiers = [
         "aps.amazonaws.com"
       ]
     }
-
     resources = [
       aws_sns_topic.topic.arn,
     ]
-
     sid = "centergauge_services_default"
   }
 }
@@ -81,9 +71,9 @@ resource "aws_sqs_queue" "dlq" {
 }
 
 resource "aws_sns_topic_subscription" "subscription" {
-  endpoint        = var.url
-  protocol        = "https"
-  topic_arn       = aws_sns_topic.topic.arn
+  endpoint  = var.url
+  protocol  = "https"
+  topic_arn = aws_sns_topic.topic.arn
   delivery_policy = jsonencode({
     "healthyRetryPolicy" : {
       "numRetries" : 10,
