@@ -23,5 +23,5 @@ variable "url" {
 
 variable "kms_key_arn" {
   description = "The arn of the KMS key"
-  type = string
+  type        = string
 }
