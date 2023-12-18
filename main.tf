@@ -51,15 +51,18 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       "SNS:Publish",
       "SNS:GetTopicAttributes"
     ]
-    principals {
-      type = "Service"
-      identifiers = [
-        "aps.amazonaws.com"
-      ]
-    }
-    resources = [
+    principals = "*"
+    resources  = [
       aws_sns_topic.topic.arn,
     ]
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceOwner"
+
+      values = [
+        data.aws_caller_identity.current.account_id,
+      ]
+    }
     sid = "centergauge_services_default"
   }
 }
@@ -71,9 +74,9 @@ resource "aws_sqs_queue" "dlq" {
 }
 
 resource "aws_sns_topic_subscription" "subscription" {
-  endpoint  = var.url
-  protocol  = "https"
-  topic_arn = aws_sns_topic.topic.arn
+  endpoint        = var.url
+  protocol        = "https"
+  topic_arn       = aws_sns_topic.topic.arn
   delivery_policy = jsonencode({
     "healthyRetryPolicy" : {
       "numRetries" : 10,
