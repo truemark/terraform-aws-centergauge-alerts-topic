@@ -51,8 +51,11 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       "SNS:Publish",
       "SNS:GetTopicAttributes"
     ]
-    principals = "*"
-    resources  = [
+    principals {
+      identifiers = ["*"]
+      type        = "*"
+    }
+    resources = [
       aws_sns_topic.topic.arn,
     ]
     condition {
