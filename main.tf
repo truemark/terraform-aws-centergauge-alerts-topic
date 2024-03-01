@@ -17,19 +17,19 @@ data "aws_iam_policy_document" "sns_topic_policy" {
   policy_id = "centergauge_sns_policy"
   statement {
     actions = [
-      "SNS:Subscribe",
-      "SNS:SetTopicAttributes",
-      "SNS:RemovePermission",
-      "SNS:Receive",
-      "SNS:Publish",
-      "SNS:ListSubscriptionsByTopic",
-      "SNS:GetTopicAttributes",
-      "SNS:DeleteTopic",
-      "SNS:AddPermission",
+      "sns:Subscribe",
+      "sns:SetTopicAttributes",
+      "sns:RemovePermission",
+      "sns:Receive",
+      "sns:Publish",
+      "sns:ListSubscriptionsByTopic",
+      "sns:GetTopicAttributes",
+      "sns:DeleteTopic",
+      "sns:AddPermission",
     ]
     condition {
       test     = "StringEquals"
-      variable = "AWS:SourceOwner"
+      variable = "aws:SourceAccount"
 
       values = [
         data.aws_caller_identity.current.account_id,
@@ -48,8 +48,8 @@ data "aws_iam_policy_document" "sns_topic_policy" {
 
   statement {
     actions = [
-      "SNS:Publish",
-      "SNS:GetTopicAttributes"
+      "sns:Publish",
+      "sns:GetTopicAttributes"
     ]
     principals {
       identifiers = ["*"]
@@ -60,7 +60,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
     ]
     condition {
       test     = "StringEquals"
-      variable = "AWS:SourceOwner"
+      variable = "aws:SourceAccount"
 
       values = [
         data.aws_caller_identity.current.account_id,
