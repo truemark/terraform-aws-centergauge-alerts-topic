@@ -77,9 +77,9 @@ resource "aws_sqs_queue" "dlq" {
 }
 
 resource "aws_sns_topic_subscription" "subscription" {
-  endpoint        = var.url
-  protocol        = "https"
-  topic_arn       = aws_sns_topic.topic.arn
+  endpoint  = var.url
+  protocol  = "https"
+  topic_arn = aws_sns_topic.topic.arn
   delivery_policy = jsonencode({
     "healthyRetryPolicy" : {
       "numRetries" : 10,
